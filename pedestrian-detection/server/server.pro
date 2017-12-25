@@ -16,10 +16,12 @@ CONFIG +=c++11
 
 HEADERS += \
     server.h \
-    camera.h
+    camera.h \
+    processeddatasender.h
 SOURCES += main.cpp \
     server.cpp \
-    camera.cpp
+    camera.cpp \
+    processeddatasender.cpp
 unix{
 message(build $$TARGET on unix)
 INSTALL_PATH="/root/repo-github/install-pedestrian-detection"

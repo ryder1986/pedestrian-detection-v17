@@ -135,10 +135,20 @@ private slots:
         // itm->setFlags(!Qt::ItemIsEditable | itm_root->flags()) ;
         p_item_device_current->setFlags(  p_item_device_current->flags() & ~Qt::ItemIsEditable) ;
     }
+    void open_camera_output(int index)
+    {
+        char buf[2000];
+        int len=Protocol::encode_output_request(buf,index);//encode buffer
+  //      memcpy(buf+Protocol::HEAD_LENGTH,setting.data(),len);
+        QByteArray rst=clt->call_server(buf,len);//talk to server
+        // itm->setFlags(!Qt::ItemIsEditable | itm_root->flags()) ;
+   //     p_item_device_current->setFlags(  p_item_device_current->flags() & ~Qt::ItemIsEditable) ;
+    }
 
 private:
     Ui::Form *window;
     ServerInfoSearcher *searcher;
+    ServerOutputRst *rst_rcver;
     Client *clt;
     CameraConfiguration *p_cfg;
     QTreeWidgetItem *p_item_device_root;

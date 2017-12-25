@@ -5,19 +5,83 @@
 #include "pd.h"
 #include "videosrc.h"
 #include "videoprocessor.h"
+#include "processeddatasender.h"
+//#include "server.h"
+//class ProcessedDataSender;
 class Camera
 {
-      typedef CameraConfiguration::camera_config_t camera_config;
-    VideoSrc *p_src;
-    VideoProcessor *_prc;
+    //   friend class  ProcessedDataSender;
+    typedef struct data{
+        VideoSrc *p_src;
+        VideoProcessor *p_worker;
+        bool quit;
+        QString url;
+        ProcessedDataSender *sender;
+        bool output;
+        int index;
+    }data_t;
+    data_t d;
+    thread *p_thread;
+    typedef CameraConfiguration::camera_config_t camera_config;
+
+    //  VideoProcessor *_prc;
 public:
+    static void fun(data_t *p_data)
+    {
+
+        Mat mt;
+        bool ret;
+        p_data->p_src=new VideoSrc(p_data->url.toStdString().data());
+        p_data->p_worker=new VideoProcessor;
+        p_data->sender=  new ProcessedDataSender;
+        QByteArray rst;
+
+        while(!p_data->quit)
+        {
+           // p_data->sender=  ProcessedDataSender::get_instance();
+
+            ret=p_data->p_src->fetch_frame(mt);
+            if(ret){
+                rst.clear();
+                p_data->p_worker->work(mt,rst);
+              //  rst.clear();rst.append(p_data->index);
+                if(p_data->output&&rst.length()){
+                    p_data->sender->send(rst);
+                    rst.clear();
+                }
+            }else{
+                this_thread::sleep_for(chrono::milliseconds(30));
+            }
+        }
+        prt(info,"quit camera thread");
+        delete   p_data->sender;
+        delete p_data->p_src;
+        delete p_data->p_worker;
+    }
+    void set_output(bool op,int index)
+    {
+        d.output=op;
+        d.index=index;
+    }
+
     Camera(camera_config cfg)
     {
-        p_src=new VideoSrc(cfg.ip.toStdString().data());
+        d.output=false;
+        d.index=-1;
+     //     d.output=true;
+//        d.sender=  ProcessedDataSender::get_instance();
+        d.url=cfg.ip;
+        d.quit=false;
+        p_thread=new thread(fun,&d);
+        //     d.sender=ProcessedDataSender::get_instance();
     }
     ~Camera()
     {
-        delete p_src;
+
+        d.quit=true;
+        p_thread->join();
+        delete p_thread;
+        delete d.sender;
     }
 };
 
@@ -92,6 +156,22 @@ public:
         case Protocol::MOD_CAMERA:
             prt(info,"protocol : modify   cam %d ",cam_index);
             break;
+        case Protocol::CAM_OUTPUT_OPEN:
+            prt(info,"protocol : open   cam %d output",cam_index);
+            memcpy(dst_buf,src_buf,Protocol::HEAD_LENGTH);
+            ret_size= Protocol::HEAD_LENGTH;
+            {
+            int i=0;
+            foreach (Camera *p_c, cameras) {
+                if(i==cam_index)
+                  p_c->set_output(true,i);
+                else
+                  p_c->set_output(false,i);
+                i++;
+            }
+
+             }
+            break;
         default:
             break;
         }
@@ -133,7 +213,7 @@ public:
 
         p_cfg->del_camera(index);
         Camera *cm=cameras[index-1];
-     //   prt(info,"delete %s",cm->d.p_src->get_url());
+        //   prt(info,"delete %s",cm->d.p_src->get_url());
         delete cm;//////////////////////////TODO
         cameras.removeAt(index-1);
         //   delete cm;

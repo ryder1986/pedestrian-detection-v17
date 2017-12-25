@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
     window->setupUi(this);
     p_cfg=new CameraConfiguration("config.json-client");
     searcher=new ServerInfoSearcher;
+    rst_rcver=new ServerOutputRst ;
     clt=new Client;
     p_video_thread=NULL;
 }
@@ -55,8 +56,10 @@ void MainWindow::on_treeWidget_devices_doubleClicked(const QModelIndex &index)
     if(p_item_device_current){
         if(!p_item_device_current->parent()){//root
         }else{//child
+
             int now=p_item_device_current->parent()->indexOfChild(p_item_device_current);
             selected_camera_index=now+1;
+            open_camera_output(now);
             prt(info,"playing index change to %d",selected_camera_index);
             if(now<p_cfg->cfg.camera_amount){
                 QString url=p_item_device_current->text(0);

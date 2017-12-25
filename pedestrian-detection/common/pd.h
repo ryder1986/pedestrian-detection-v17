@@ -44,7 +44,8 @@ public :
         GET_CONFIG,
         ADD_CAMERA,
         DEL_CAMERA,
-        MOD_CAMERA
+        MOD_CAMERA,
+        CAM_OUTPUT_OPEN
     };
     enum RET{
         RET_SUCCESS,
@@ -133,6 +134,15 @@ public :
         pkg_set_op(buf,ADD_CAMERA);
         pkg_set_ret(buf,RET_SUCCESS);
         return HEAD_LENGTH+len;
+    }
+    static int encode_output_request(char *buf,int index){
+        //   pkg_set_len(ba);
+        memset(buf,0,Pd::BUFFER_LENGTH);
+        pkg_set_len(buf,0);
+        pkg_set_version(buf,VERSION);
+        pkg_set_op(buf,CAM_OUTPUT_OPEN);
+        pkg_set_ret(buf,index);
+        return HEAD_LENGTH;
     }
     static int encode_delcam_request(char *buf,int index){
         //   pkg_set_len(ba);

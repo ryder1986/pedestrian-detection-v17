@@ -97,6 +97,7 @@ public slots:
             udp_skt_alg_output->readDatagram(datagram_rst.data(),datagram_rst.size());
             //        udp_skt_alg_output->readDatagram(sss,500);
             //          datagram_rst= udp_skt_alg_output->readAll();
+           #if 0
             QList <QByteArray > bl= datagram_rst.split(':');
             QByteArray b_index=bl[0];
             int index=*(b_index);
@@ -104,6 +105,11 @@ public slots:
             prt(info,"get cam   %d rst",index);
 
             QByteArray b_loc=bl[1];
+#else
+
+            prt(info,"get data %s",datagram_rst.data());
+#endif
+
             //   emit send_camera_rst(index,b_loc);
             //    QList <QByteArray > xy= b_loc.split(',');
             //            int x=xy[0].toInt();
