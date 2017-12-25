@@ -81,7 +81,7 @@ public:
         d.quit=true;
         p_thread->join();
         delete p_thread;
-        delete d.sender;
+       // delete d.sender;
     }
 };
 

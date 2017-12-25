@@ -15,14 +15,14 @@ void test_fun(data_t *dt)
 {
     bool ret=false;
     Mat mt;
-    while(1){
-        ret=dt->src->fetch_frame(mt);
+//    while(1){
+//        ret=dt->src->fetch_frame(mt);
 
-        if(ret){
-           // dt->w->update_mat(mt);
-           dt->p.work(mt);
-        }
-    }
+//        if(ret){
+//           // dt->w->update_mat(mt);
+//           dt->p.work(mt);
+//        }
+//    }
 }
 
 int main(int argc, char *argv[])

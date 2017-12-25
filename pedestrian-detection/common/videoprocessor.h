@@ -95,6 +95,8 @@ public:
 
 
                     vector<Rect>::iterator it = objs.begin();
+                    QString str;
+                    str.clear();
                     while (it != objs.end() && objs.size() != 0)
                     {
                         pedestrian_num++;
@@ -125,12 +127,14 @@ public:
 
 //                            rst.append(rct.height);
 
-                            QString str;
-                            str.clear();
+
+
                             QString x_str=QString::number(rct.x);
                             QString y_str=QString::number(rct.y);
-                            QString test_str=QString::number(test);
-                            str.append(x_str).append(",").append(y_str);
+                            QString width_str=QString::number(rct.width);
+                            QString height_str=QString::number(rct.height);
+                            //QString test_str=QString::number(test);
+                            str.append(x_str).append(",").append(y_str).append(",").append(width_str).append(",").append(height_str).append(":");
                             rst.append(str.toStdString().data());
 
 //                            rst_ba.append(x_str.toStdString().data());
@@ -139,7 +143,7 @@ public:
                             //                    prt(info,"%d %d",rct.x,rct.y);
                             //               prt(info,"%d",rct.x);
                             ret=true;
-                            break;//TODO, now we get first one
+                          //  break;//TODO, now we get first one
                         }
 
                         it++;
